@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT 4.0 Learning Hub - Thư viện Học tập Cá nhân</title>
+  <!-- Tải Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tải Font Inter hỗ trợ tiếng Việt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            },
+            cyan40: '#06b6d4',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    /* Tùy chỉnh thanh cuộn tinh tế */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+  <!-- Lớp phủ cho thiết bị di động khi mở thanh bên -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <div class="min-h-screen flex flex-col lg:flex-row w-full">
+    <!-- THANH ĐIỀU HƯỚNG BÊN TRÁI (LEFT SIDEBAR) -->
+    <aside
+      id="sidebar"
+      class="fixed lg:sticky top-0 left-0 z-40 h-screen w-80 max-w-[85vw] bg-white border-r border-slate-200 flex flex-col justify-between transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out shrink-0"
+    >
+      <!-- Phần đầu Sidebar: Thương hiệu & Tiến độ -->
+      <div class="p-4 border-b border-slate-100">
+        <div class="flex items-center justify-between gap-2 mb-4">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-sm shrink-0">
+              <!-- Biểu tượng kiến trúc số 4.0 -->
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <div class="text-sm font-bold text-slate-900 truncate">IT 4.0 Learning Hub</div>
+              <div class="text-xs font-medium text-indigo-600 truncate">Thư viện Học tập Cá nhân</div>
+            </div>
+          </div>
+          <button
+            id="close-sidebar-btn"
+            type="button"
+            aria-label="Đóng danh sách chuyên đề"
+            class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Theo dõi tiến độ học tập -->
+        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3">
+          <div class="flex items-center justify-between text-xs font-semibold mb-1.5">
+            <span class="text-slate-600">Tiến độ hoàn thành</span>
+            <span id="progress-text" class="text-indigo-600 font-bold">0/8 chuyên đề (0%)</span>
+          </div>
+          <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              id="progress-bar"
+              class="h-full bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-full transition-all duration-300"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+            <span id="save-status" class="flex items-center gap-1 text-emerald-600 font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+              Tự động lưu LocalStorage
+            </span>
+            <span>8 Chuyên đề</span>
+          </div>
+        </div>
+
+        <!-- Ô tìm kiếm chuyên đề & nội dung -->
+        <div class="mt-3 relative">
+          <svg
+            class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+          </svg>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Tìm chuyên đề, khái niệm..."
+            class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 focus:bg-white transition"
+          />
+          <button
+            id="clear-search-btn"
+            type="button"
+            title="Xóa từ khóa"
+            class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded-md"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Danh sách 8 chuyên đề -->
+      <nav id="module-nav" aria-label="Danh sách 8 chuyên đề CNTT 4.0" class="flex-1 overflow-y-auto p-3 space-y-1.5">
+        <!-- Được render động bằng JavaScript -->
+      </nav>
+
+      <!-- Chân Sidebar: Nút đặt lại tiến độ -->
+      <div class="p-3 border-t border-slate-100 bg-slate-50/70">
+        <button
+          id="open-reset-modal-btn"
+          type="button"
+          class="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold text-rose-600 bg-white hover:bg-rose-50 border border-rose-200 rounded-xl transition cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Đặt lại tiến độ & ghi chú
+        </button>
+      </div>
+    </aside>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH (MAIN CONTENT AREA) -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- TOP HEADER -->
+      <header class="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3.5">
+        <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <button
+              id="open-sidebar-btn"
+              type="button"
+              aria-label="Mở danh sách chuyên đề"
+              class="lg:hidden p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 shrink-0"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            <!-- Breadcrumb bắt buộc -->
+            <div class="min-w-0">
+              <div class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+                <span class="truncate">Nhập môn CNTT &amp; Kỷ nguyên Số 4.0</span>
+                <span class="text-slate-300">/</span>
+                <span id="breadcrumb-topic" class="font-semibold text-indigo-600 truncate">Chuyên đề 1</span>
+              </div>
+              <p class="text-[11px] text-slate-400 hidden sm:block truncate">
+                Nguồn tư liệu: Tài liệu "Kiến trúc CNTT 4.0" (14 trang) • Toàn cảnh bản thiết kế kỹ thuật số 4.0
+              </p>
+            </div>
+          </div>
+
+          <!-- Checkbox đánh dấu hoàn thành nhanh trên header -->
+          <label
+            for="header-complete-checkbox"
+            class="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition cursor-pointer select-none shrink-0"
+          >
+            <input
+              id="header-complete-checkbox"
+              type="checkbox"
+              class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 cursor-pointer"
+            />
+            <span class="text-xs font-semibold text-slate-700 hidden sm:inline">Đã hoàn thành</span>
+          </label>
+        </div>
+      </header>
+
+      <!-- NỘI DUNG CHUYÊN ĐỀ -->
+      <main id="main-content" class="flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div class="max-w-5xl mx-auto space-y-6">
+          <!-- Thẻ tiêu đề & tóm tắt chuyên đề -->
+          <section id="module-header-card" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-7 shadow-xs">
+            <!-- Render động -->
+          </section>
+
+          <!-- Khu vực các thẻ học tập trọng tâm (Key Concepts & Study Cards) -->
+          <section id="study-cards-section" class="space-y-4">
+            <!-- Render động -->
+          </section>
+
+          <!-- Khu vực bảng so sánh / tra cứu (Comparison / Reference Tables) -->
+          <section id="tables-section" class="space-y-4">
+            <!-- Render động -->
+          </section>
+
+          <!-- Khu vực Tự kiểm tra nhanh & Ghi chú cá nhân (Quick Self-Check & Personal Notes) -->
+          <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Tự kiểm tra nhanh -->
+            <div id="self-check-card" class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+              <!-- Render động -->
+            </div>
+
+            <!-- Ghi chú cá nhân cho chuyên đề -->
+            <div class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200/70">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </span>
+                    <h3 class="text-base font-bold text-slate-900">Ghi chú cá nhân</h3>
+                  </div>
+                  <span id="note-saved-badge" class="text-[11px] font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Đã lưu vào trình duyệt
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">
+                  Ghi lại ý tưởng cốt lõi, ví dụ thực tế hoặc câu hỏi ôn tập cho chuyên đề này. Nội dung được lưu tự động.
+                </p>
+                <textarea
+                  id="personal-note-textarea"
+                  rows="5"
+                  placeholder="Nhập ghi chú cá nhân của bạn tại đây..."
+                  class="w-full p-3.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 focus:bg-white transition resize-y"
+                ></textarea>
+              </div>
+              <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+                <span id="note-char-count">0 ký tự</span>
+                <button
+                  id="clear-note-btn"
+                  type="button"
+                  class="text-slate-500 hover:text-rose-600 font-medium transition cursor-pointer"
+                >
+                  Xóa ghi chú chuyên đề này
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Thanh điều hướng Chuyên đề Trước / Tiếp theo -->
+          <nav aria-label="Điều hướng giữa các chuyên đề" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+            <button
+              id="prev-module-btn"
+              type="button"
+              class="flex items-center justify-center sm:justify-start gap-2 px-4 py-3 rounded-xl bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 text-sm font-semibold text-slate-700 transition disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+            >
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span id="prev-module-label" class="truncate">Chuyên đề trước</span>
+            </button>
+
+            <button
+              id="next-module-btn"
+              type="button"
+              class="flex items-center justify-center sm:justify-end gap-2 px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+            >
+              <span id="next-module-label" class="truncate">Chuyên đề tiếp theo</span>
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL XÁC NHẬN ĐẶT LẠI TIẾN ĐỘ & GHI CHÚ -->
+  <div
+    id="reset-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="reset-modal-title"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+  >
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-xl">
+      <div class="flex items-start gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <h3 id="reset-modal-title" class="text-base font-bold text-slate-900">Xác nhận đặt lại toàn bộ dữ liệu?</h3>
+          <p class="mt-1.5 text-sm text-slate-600 leading-relaxed">
+            Hành động này sẽ xóa toàn bộ dấu tích hoàn thành chuyên đề, kết quả tự kiểm tra và ghi chú cá nhân đã lưu trong trình duyệt (<code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded">localStorage</code>).
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5">
+        <button
+          id="cancel-reset-btn"
+          type="button"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+        >
+          Hủy bỏ
+        </button>
+        <button
+          id="confirm-reset-btn"
+          type="button"
+          class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-sm font-semibold text-white transition cursor-pointer"
+        >
+          Đồng ý đặt lại
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST THÔNG BÁO GÓC MÀN HÌNH (THAY THẾ ALERT) -->
+  <div
+    id="toast-banner"
+    class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-medium shadow-lg"
+  >
+    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    <span id="toast-message">Đã cập nhật</span>
+  </div>
+
+  <script>
+    /**
+     * DỮ LIỆU 8 CHUYÊN ĐỀ TỪ TÀI LIỆU "Kiến trúc CNTT 4.0.pdf" (14 trang)
+     * Toàn bộ khái niệm, số liệu, ví dụ và thuật ngữ bám sát nội dung PDF.
+     */
+    const MODULES_DATA = [
+      {
+        id: 1,
+        shortLabel: 'Chuyên đề 1',
+        title: 'Toàn cảnh CNTT 4.0 & Lịch sử CMCN (1.0–4.0)',
+        subtitle: 'Bản thiết kế kỹ thuật số từ nền tảng vật lý đến siêu trí tuệ, sự hội tụ công nghệ 4.0 và nhu cầu nhân lực trọng điểm.',
+        pageRef: 'Trang 1 – 2',
+        tags: ['Kiến trúc Kỷ nguyên số', 'CMCN 1.0–4.0', 'Hội tụ công nghệ', 'Nhân lực 4.0'],
+        keyConcepts: [
+          {
+            title: 'Kiến trúc Kỷ nguyên số & 8 trụ cột',
+            badge: 'Tổng quan bản thiết kế',
+            description:
+              'Bản thiết kế kỹ thuật số đi từ nền tảng vật lý cơ sở đến tầng siêu trí tuệ, được dẫn dắt bởi đạo đức số. Gồm 8 trụ cột cốt lõi: History 4.0, Hardware, OS, Internet, Cloud, AI, Computational Thinking, và Security/Ethics.',
+            highlights: [
+              'Đi từ nền tảng vật lý cơ sở đến tầng siêu trí tuệ',
+              'Dẫn dắt bởi đạo đức số (Security/Ethics)',
+              'Kết nối tư duy tính toán, hạ tầng số và trí tuệ nhân tạo'
+            ]
+          },
+          {
+            title: 'Tiến trình Lịch sử Cách mạng Công nghiệp',
+            badge: '1760 – 2010+',
+            description:
+              'Lịch sử phát triển qua 4 giai đoạn: CMCN 1.0 (1760 - Cơ khí hóa/Máy hơi nước), CMCN 2.0 (1870 - Sản xuất hàng loạt/Điện năng), CMCN 3.0 (1970 - Tự động hóa/Máy tính & Internet), và CMCN 4.0 (2010+ - Kết nối thế giới vật lý và thế giới số thông qua máy móc thông minh).',
+            highlights: [
+              '1.0 (1760): Cơ khí hóa / Máy hơi nước',
+              '2.0 (1870): Sản xuất hàng loạt / Điện năng',
+              '3.0 (1970): Tự động hóa / Máy tính & Internet',
+              '4.0 (2010+): Kết nối vật lý & số qua máy móc thông minh'
+            ]
+          },
+          {
+            title: 'Sự hội tụ công nghệ & Nhu cầu nhân lực 4.0',
+            badge: 'Công nghệ & Nghề nghiệp',
+            description:
+              'CMCN 4.0 hình thành từ sự hội tụ của AI, IoT, Big Data, Cloud Computing và Blockchain. Sự chuyển dịch này tạo ra nhu cầu khổng lồ đối với các vị trí Kỹ sư AI, Data Analyst và chuyên gia An ninh mạng.',
+            highlights: [
+              'Hội tụ: AI, IoT, Big Data, Cloud Computing, Blockchain',
+              'Nhu cầu nhân lực nổi bật: Kỹ sư AI, Data Analyst, chuyên gia An ninh mạng'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'Bảng tóm tắt tiến trình Cách mạng Công nghiệp (1.0 – 4.0)',
+            headers: ['Giai đoạn', 'Mốc thời gian', 'Đặc trưng cốt lõi / Nền tảng'],
+            rows: [
+              ['CMCN 1.0', '1760', 'Cơ khí hóa / Máy hơi nước'],
+              ['CMCN 2.0', '1870', 'Sản xuất hàng loạt / Điện năng'],
+              ['CMCN 3.0', '1970', 'Tự động hóa / Máy tính & Internet'],
+              ['CMCN 4.0', '2010+', 'Kết nối thế giới vật lý & thế giới số qua máy móc thông minh; hội tụ AI, IoT, Big Data, Cloud Computing, Blockchain']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'Theo tài liệu, sự chuyển dịch của CMCN 4.0 dẫn đến nhu cầu nhân lực khổng lồ cho những vai trò nào?',
+          options: [
+            'Kỹ sư AI, Data Analyst và chuyên gia An ninh mạng',
+            'Chỉ tập trung vào vận hành máy hơi nước và dây chuyền điện năng',
+            'Chỉ cần nhân sự nhập liệu giấy tờ truyền thống'
+          ],
+          correctIndex: 0,
+          explanation: 'Tài liệu nêu rõ CMCN 4.0 kết nối thế giới vật lý và thế giới số qua máy móc thông minh, dẫn đến nhu cầu khổng lồ về Kỹ sư AI, Data Analyst và chuyên gia An ninh mạng.'
+        }
+      },
+      {
+        id: 2,
+        shortLabel: 'Chuyên đề 2',
+        title: 'Chuyển đổi số (CĐS) vs. Tin học hóa',
+        subtitle: 'Phân biệt số hóa lưu trữ với tái cấu trúc toàn diện quy trình tạo giá trị mới, cùng 3 động lực cốt lõi theo UNIDO.',
+        pageRef: 'Trang 3',
+        tags: ['Tin học hóa', 'Chuyển đổi số (CĐS)', 'Tái cấu trúc', 'UNIDO'],
+        keyConcepts: [
+          {
+            title: 'Tin học hóa (Số hóa dữ liệu & công cụ lưu trữ)',
+            badge: 'Lưu trữ & Số hóa',
+            description:
+              'Là quá trình số hóa dữ liệu (ví dụ: từ điển giấy thành đĩa CD). Tin học hóa không thay đổi quy trình cốt lõi hay mô hình kinh doanh, mà chỉ thay đổi công cụ lưu trữ.',
+            highlights: [
+              'Ví dụ: Từ điển giấy thành đĩa CD',
+              'Không thay đổi quy trình cốt lõi hay mô hình kinh doanh',
+              'Chỉ thay đổi công cụ lưu trữ'
+            ]
+          },
+          {
+            title: 'Chuyển đổi số (CĐS) – Tái cấu trúc tạo giá trị mới',
+            badge: 'Tái cấu trúc quy trình',
+            description:
+              'Thay đổi hoàn toàn quy trình và tạo ra giá trị mới (ví dụ: Cổng Dịch vụ công Quốc gia). Bản chất của Chuyển đổi số là tái cấu trúc chứ không chỉ là số hóa.',
+            highlights: [
+              'Ví dụ: Cổng Dịch vụ công Quốc gia',
+              'Thay đổi hoàn toàn quy trình, tạo ra giá trị mới',
+              'Bản chất là tái cấu trúc chứ không chỉ là số hóa'
+            ]
+          },
+          {
+            title: '3 động lực cốt lõi thúc đẩy Chuyển đổi số (UNIDO)',
+            badge: 'Khung UNIDO',
+            description:
+              'Chuyển đổi số được thúc đẩy bởi 3 động lực cốt lõi theo UNIDO: Sự tất yếu (Necessity), Công nghệ (Technology) và Kỳ vọng (Expectations).',
+            highlights: [
+              'Sự tất yếu (Necessity)',
+              'Công nghệ (Technology)',
+              'Kỳ vọng (Expectations)'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'So sánh Tin học hóa và Chuyển đổi số (CĐS)',
+            headers: ['Tiêu chí', 'Tin học hóa', 'Chuyển đổi số (CĐS)'],
+            rows: [
+              ['Bản chất', 'Số hóa dữ liệu; chỉ thay đổi công cụ lưu trữ', 'Tái cấu trúc toàn diện, không chỉ là số hóa'],
+              ['Quy trình & Mô hình', 'Không thay đổi quy trình cốt lõi hay mô hình kinh doanh', 'Thay đổi hoàn toàn quy trình, tạo ra giá trị mới'],
+              ['Ví dụ trong tài liệu', 'Từ điển giấy thành đĩa CD', 'Cổng Dịch vụ công Quốc gia']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'Bản chất cốt lõi của Chuyển đổi số (CĐS) theo tài liệu là gì?',
+          options: [
+            'Chỉ chuyển tài liệu giấy sang định dạng số hoặc đĩa CD',
+            'Tái cấu trúc và thay đổi hoàn toàn quy trình để tạo ra giá trị mới, chứ không chỉ là số hóa',
+            'Chỉ mua sắm thêm máy tính để bàn cho các phòng ban'
+          ],
+          correctIndex: 1,
+          explanation: 'Bản chất của Chuyển đổi số là tái cấu trúc chứ không chỉ là số hóa — thay đổi hoàn toàn quy trình và tạo ra giá trị mới (như Cổng Dịch vụ công Quốc gia).'
+        }
+      },
+      {
+        id: 3,
+        shortLabel: 'Chuyên đề 3',
+        title: 'Nền tảng vật lý & Điện toán lượng tử',
+        subtitle: 'Cấu trúc phần cứng cơ bản, luồng xử lý dữ liệu và bước chuyển dịch sang kiến trúc chuyên biệt AI & máy tính lượng tử.',
+        pageRef: 'Trang 4',
+        tags: ['CPU / RAM / ROM', 'Định luật Moore', 'DSA / TPU', 'Qubit lượng tử'],
+        keyConcepts: [
+          {
+            title: 'Phần cứng cơ bản & Luồng xử lý thông tin',
+            badge: 'Input → Xử lý → Output',
+            description:
+              'Luồng vận hành đi từ Input → CPU / RAM / ROM → Output. Trong đó CPU (xung nhịp GHz, Cores, Cache) là trung tâm điều khiển; RAM là bộ nhớ tạm thời, bay hơi (bay dữ liệu khi mất điện); ROM là bộ nhớ cố định, chứa BIOS/UEFI khởi động.',
+            highlights: [
+              'CPU: Xung nhịp GHz, Cores, Cache — trung tâm điều khiển',
+              'RAM: Bộ nhớ tạm thời, bay hơi khi mất điện',
+              'ROM: Bộ nhớ cố định, chứa BIOS/UEFI khởi động',
+              'Luồng: Input → CPU/RAM/ROM → Output'
+            ]
+          },
+          {
+            title: 'Xu hướng 4.0: Giới hạn Định luật Moore & Kiến trúc chuyên biệt',
+            badge: 'DSA / TPU cho AI',
+            description:
+              'Định luật Moore đang tới hạn, thúc đẩy sự dịch chuyển từ CPU đa năng sang kiến trúc chuyên biệt (DSA/TPU cho AI) nhằm tối ưu hiệu năng tính toán cho trí tuệ nhân tạo.',
+            highlights: [
+              'Định luật Moore tới hạn',
+              'Dịch chuyển từ CPU đa năng sang kiến trúc chuyên biệt (DSA/TPU cho AI)'
+            ]
+          },
+          {
+            title: 'Điện toán lượng tử & Trạng thái chồng chập Qubit',
+            badge: 'Mô phỏng siêu phức tạp',
+            description:
+              'Máy tính lượng tử sử dụng trạng thái chồng chập Qubit để giải quyết các bài toán mô phỏng siêu phức tạp mà kiến trúc truyền thống gặp nhiều giới hạn.',
+            highlights: [
+              'Sử dụng trạng thái chồng chập Qubit',
+              'Giải quyết bài toán mô phỏng siêu phức tạp'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'Đối chiếu thành phần phần cứng nền tảng & xu hướng 4.0',
+            headers: ['Thành phần / Khái niệm', 'Đặc điểm & Chức năng chính'],
+            rows: [
+              ['CPU', 'Xung nhịp GHz, Cores, Cache; đóng vai trò trung tâm điều khiển'],
+              ['RAM', 'Bộ nhớ tạm thời, bay hơi (mất dữ liệu khi mất điện)'],
+              ['ROM', 'Bộ nhớ cố định, chứa BIOS/UEFI khởi động'],
+              ['DSA / TPU (AI)', 'Kiến trúc chuyên biệt cho AI, đáp ứng xu hướng khi Định luật Moore tới hạn'],
+              ['Máy tính lượng tử (Qubit)', 'Sử dụng trạng thái chồng chập Qubit để giải quyết bài toán mô phỏng siêu phức tạp']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'Bộ nhớ nào sau đây là bộ nhớ cố định, chứa BIOS/UEFI khởi động?',
+          options: [
+            'RAM (bộ nhớ tạm thời)',
+            'ROM (bộ nhớ cố định)',
+            'Qubit (trạng thái chồng chập)'
+          ],
+          correctIndex: 1,
+          explanation: 'ROM là bộ nhớ cố định chứa BIOS/UEFI khởi động, còn RAM là bộ nhớ tạm thời dễ bay hơi khi mất điện.'
+        }
+      },
+      {
+        id: 4,
+        shortLabel: 'Chuyên đề 4',
+        title: 'Hệ điều hành & Kỷ nguyên Ảo hóa',
+        subtitle: 'Chức năng phân bổ tài nguyên, nguyên tắc đặc quyền tối thiểu, so sánh VM và Container, cùng tầm nhìn AI OS.',
+        pageRef: 'Trang 5',
+        tags: ['Hệ điều hành (OS)', 'Thrashing', 'VM vs Container', 'AI OS'],
+        keyConcepts: [
+          {
+            title: 'Vai trò cốt lõi của Hệ điều hành & Đặc quyền tối thiểu',
+            badge: 'Resource Allocator & Control',
+            description:
+              'Hệ điều hành (OS) đóng vai trò là "Người phân bổ tài nguyên" (Resource Allocator — chống thắt cổ chai Thrashing) và "Chương trình kiểm soát" (Control Program), đồng thời yêu cầu áp dụng nguyên tắc Đặc quyền tối thiểu (Least Privilege).',
+            highlights: [
+              'Người phân bổ tài nguyên (Resource Allocator — chống thắt cổ chai Thrashing)',
+              'Chương trình kiểm soát (Control Program)',
+              'Áp dụng nguyên tắc Đặc quyền tối thiểu (Least Privilege)'
+            ]
+          },
+          {
+            title: 'Ảo hóa: Máy ảo (VM) vs. Container',
+            badge: 'Kiến trúc ảo hóa',
+            description:
+              'Máy ảo (VM: App → Guest OS → Hypervisor → Hardware) cách ly ở cấp độ phần cứng, nặng cỡ GB, khởi động tính bằng phút. Container (App 1 / App 2 → Container Engine như Docker → Host OS → Hardware) dùng chung Kernel máy chủ, nhẹ cỡ MB, khởi động bằng giây.',
+            highlights: [
+              'VM: App → Guest OS → Hypervisor → Hardware (cách ly cấp độ phần cứng, nặng cỡ GB, khởi động tính bằng phút)',
+              'Container: App 1/App 2 → Container Engine (Docker) → Host OS → Hardware (dùng chung Kernel máy chủ, nhẹ cỡ MB, khởi động bằng giây)'
+            ]
+          },
+          {
+            title: 'Xu hướng tương lai: AI OS',
+            badge: 'Dự đoán tài nguyên chủ động',
+            description:
+              'AI OS là hệ điều hành thông minh có khả năng dự đoán tài nguyên chủ động thay vì phản ứng thụ động.',
+            highlights: [
+              'Hệ điều hành thông minh dự đoán tài nguyên chủ động',
+              'Chuyển dịch từ phản ứng thụ động sang chủ động'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'So sánh Máy ảo (VM) và Container theo tài liệu',
+            headers: ['Tiêu chí', 'Máy ảo (VM)', 'Container'],
+            rows: [
+              ['Ngăn xếp kiến trúc', 'App → Guest OS → Hypervisor → Hardware', 'App 1 / App 2 → Container Engine (Docker) → Host OS → Hardware'],
+              ['Mức độ cách ly & Kernel', 'Cách ly cấp độ phần cứng (có Guest OS riêng)', 'Dùng chung Kernel máy chủ (Host OS)'],
+              ['Kích thước & Thời gian khởi động', 'Nặng cỡ GB, khởi động tính bằng phút', 'Nhẹ cỡ MB, khởi động bằng giây']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'Điểm khác biệt nổi bật của Container (như Docker) so với Máy ảo (VM) là gì?',
+          options: [
+            'Dùng chung Kernel máy chủ, nhẹ cỡ MB và khởi động bằng giây',
+            'Luôn cài đặt đầy đủ Guest OS riêng cho từng ứng dụng và khởi động tính bằng phút',
+            'Không cần hệ điều hành máy chủ (Host OS) lẫn phần cứng'
+          ],
+          correctIndex: 0,
+          explanation: 'Container dùng chung Kernel máy chủ, nhẹ cỡ MB và khởi động bằng giây; trong khi VM cách ly cấp độ phần cứng, nặng cỡ GB và khởi động tính bằng phút.'
+        }
+      },
+      {
+        id: 5,
+        shortLabel: 'Chuyên đề 5',
+        title: 'Mạng lưới số, Giao thức & IPv6',
+        subtitle: 'Hành trình từ thoại analog 1G đến mạng vệ tinh 6G, đặc điểm TCP/UDP và bước chuyển đổi sang IPv6 cho IoT & Smart Cities.',
+        pageRef: 'Trang 6',
+        tags: ['1G → 6G', 'TCP / UDP', 'IPv4 → IPv6', 'IoT & Smart Cities'],
+        keyConcepts: [
+          {
+            title: 'Tiến hóa mạng di động (Cellular Evolution: 1G → 6G)',
+            badge: 'Từ Analog đến 6G',
+            description:
+              'Mạng di động tiến hóa qua các thế hệ: 1G (Analog) → 2G → 3G → 4G (All-IP) → 5G (Hỗ trợ IoT) → 6G (Mạng vệ tinh 3D, Native AI, 1 Tbps, <1ms).',
+            highlights: [
+              '1G (Analog) → 2G → 3G → 4G (All-IP) → 5G (Hỗ trợ IoT)',
+              '6G: Mạng vệ tinh 3D, Native AI, 1 Tbps, <1ms'
+            ]
+          },
+          {
+            title: 'Giao thức mạng: TCP/HTTP và UDP',
+            badge: 'Độ tin cậy vs Độ trễ thấp',
+            description:
+              'Giao thức TCP / HTTP hướng đến độ tin cậy cao; trong khi giao thức UDP phù hợp cho Livestream, Game và các ứng dụng yêu cầu độ trễ thấp.',
+            highlights: [
+              'TCP / HTTP: Độ tin cậy cao',
+              'UDP: Livestream / Game / Độ trễ thấp'
+            ]
+          },
+          {
+            title: 'Chuyển đổi từ IPv4 sang IPv6 cho IoT & Thành phố thông minh',
+            badge: '128-bit • 340 undecillion',
+            description:
+              'Sự cạn kiệt địa chỉ IPv4 buộc phải chuyển đổi sang IPv6 (128-bit, 340 undecillion địa chỉ). Đây là nền tảng hạ tầng kỹ thuật bắt buộc để vận hành hệ sinh thái Internet of Things (IoT) và Thành phố thông minh (Smart Cities).',
+            highlights: [
+              'IPv6: 128-bit, 340 undecillion địa chỉ',
+              'Hạ tầng kỹ thuật bắt buộc cho IoT và Thành phố thông minh (Smart Cities)'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'Tra cứu nhanh Mạng di động, Giao thức & Địa chỉ IP',
+            headers: ['Nhóm chủ đề', 'Nội dung chính trong tài liệu'],
+            rows: [
+              ['Tiến hóa di động', '1G (Analog) → 2G → 3G → 4G (All-IP) → 5G (Hỗ trợ IoT) → 6G (Mạng vệ tinh 3D, Native AI, 1 Tbps, <1ms)'],
+              ['TCP / HTTP', 'Giao thức hướng đến độ tin cậy cao'],
+              ['UDP', 'Giao thức phù hợp cho Livestream / Game / Độ trễ thấp'],
+              ['IPv6 (128-bit)', '340 undecillion địa chỉ; giải quyết cạn kiệt IPv4 cho IoT và Smart Cities']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'IPv6 có độ dài bao nhiêu bit và cung cấp khoảng bao nhiêu địa chỉ để phục vụ IoT và Smart Cities?',
+          options: [
+            '32-bit, khoảng 4,3 tỷ địa chỉ',
+            '128-bit, 340 undecillion địa chỉ',
+            '64-bit, chỉ dùng cho mạng nội bộ văn phòng'
+          ],
+          correctIndex: 1,
+          explanation: 'Tài liệu ghi nhận chuyển đổi sang IPv6 (128-bit, 340 undecillion địa chỉ) là nền tảng hạ tầng kỹ thuật bắt buộc cho IoT và Thành phố thông minh (Smart Cities).'
+        }
+      },
+      {
+        id: 6,
+        shortLabel: 'Chuyên đề 6',
+        title: 'Điện toán đám mây (Cloud Computing)',
+        subtitle: 'Ảo hóa hạ tầng theo yêu cầu, các mô hình triển khai & dịch vụ đám mây, chiến lược Multi-Cloud và 5 đặc tính NIST.',
+        pageRef: 'Trang 7',
+        tags: ['Public / Private / Hybrid', 'Multi-Cloud', 'SaaS / PaaS / IaaS', '5 đặc tính NIST'],
+        keyConcepts: [
+          {
+            title: 'Mô hình triển khai & Chiến lược Multi-Cloud',
+            badge: 'Chống Vendor lock-in',
+            description:
+              'Đám mây ảo hóa hạ tầng vật lý thành các dịch vụ theo yêu cầu. Các mô hình triển khai gồm Public Cloud (Công cộng), Private Cloud (Riêng tư — bảo mật sau tường lửa), Hybrid Cloud (Lai), cùng Multi-Cloud (Đa đám mây — chống lệ thuộc nhà cung cấp / Vendor lock-in).',
+            highlights: [
+              'Public Cloud (Công cộng), Private Cloud (Riêng tư — bảo mật sau tường lửa), Hybrid Cloud (Lai)',
+              'Multi-Cloud (Đa đám mây): Chống lệ thuộc nhà cung cấp / Vendor lock-in'
+            ]
+          },
+          {
+            title: 'Mô hình dịch vụ Đám mây: SaaS, PaaS, IaaS',
+            badge: '3 tầng dịch vụ',
+            description:
+              'Gồm SaaS (Phần mềm dịch vụ: ứng dụng dùng ngay cho người dùng cuối như Gmail, Trello), PaaS (Nền tảng dịch vụ: môi trường code cho Developer như Heroku, App Engine), và IaaS (Hạ tầng dịch vụ: thuê phần cứng, mạng, máy chủ như AWS, Azure).',
+            highlights: [
+              'SaaS: Phần mềm dịch vụ, ứng dụng dùng ngay cho người dùng cuối (Gmail, Trello)',
+              'PaaS: Nền tảng dịch vụ, môi trường code cho Developer (Heroku, App Engine)',
+              'IaaS: Hạ tầng dịch vụ, thuê phần cứng, mạng, máy chủ (AWS, Azure)'
+            ]
+          },
+          {
+            title: '5 Đặc tính thiết yếu của Đám mây (NIST)',
+            badge: 'Chuẩn NIST',
+            description:
+              'Theo NIST, điện toán đám mây có 5 đặc tính thiết yếu: Truy cập mạng rộng rãi, Tự phục vụ theo nhu cầu, Co giãn nhanh, Đo lường dịch vụ, và Dùng chung tài nguyên.',
+            highlights: [
+              'Truy cập mạng rộng rãi & Tự phục vụ theo nhu cầu',
+              'Co giãn nhanh & Đo lường dịch vụ',
+              'Dùng chung tài nguyên'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'Bảng phân loại các mô hình dịch vụ Điện toán đám mây',
+            headers: ['Mô hình dịch vụ', 'Vai trò & Đối tượng', 'Ví dụ minh họa'],
+            rows: [
+              ['SaaS (Phần mềm dịch vụ)', 'Ứng dụng dùng ngay cho người dùng cuối', 'Gmail, Trello'],
+              ['PaaS (Nền tảng dịch vụ)', 'Môi trường code cho Developer', 'Heroku, App Engine'],
+              ['IaaS (Hạ tầng dịch vụ)', 'Thuê phần cứng, mạng, máy chủ', 'AWS, Azure']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'Chiến lược Multi-Cloud (Đa đám mây) giúp tổ chức giải quyết rủi ro nào?',
+          options: [
+            'Chống lệ thuộc nhà cung cấp (Vendor lock-in)',
+            'Loại bỏ hoàn toàn nhu cầu bảo mật tường lửa',
+            'Thay thế việc viết mã của Developer'
+          ],
+          correctIndex: 0,
+          explanation: 'Multi-Cloud (Đa đám mây) giúp chống lệ thuộc nhà cung cấp / Vendor lock-in khi kết hợp nhiều nguồn tài nguyên đám mây.'
+        }
+      },
+      {
+        id: 7,
+        shortLabel: 'Chuyên đề 7',
+        title: 'Dữ liệu lớn (Big Data), AI & Prompt Engineering',
+        subtitle: 'Big Data làm nhiên liệu thô, AI làm động cơ xử lý, quản trị dữ liệu/AI và kỹ thuật Prompt Engineering / Chain of Thought.',
+        pageRef: 'Trang 8 – 9',
+        tags: ['Big Data (175 ZB)', 'Intelligent Agent', 'ANI / AGI / ASI', 'Prompt & CoT'],
+        keyConcepts: [
+          {
+            title: 'Dữ liệu lớn (Big Data) — Nhiên liệu thô',
+            badge: '175 ZB năm 2025',
+            description:
+              'Big Data đóng vai trò là nhiên liệu thô với các đặc trưng nổi bật: Volume (khối lượng: 175 ZB năm 2025), Variety (đa dạng cấu trúc), Velocity (tốc độ thời gian thực), và Veracity (độ tin cậy / tính xác thực).',
+            highlights: [
+              'Volume (Khối lượng): 175 ZB năm 2025',
+              'Variety (Đa dạng cấu trúc) & Velocity (Tốc độ thời gian thực)',
+              'Veracity (Độ tin cậy)'
+            ]
+          },
+          {
+            title: 'Trí tuệ nhân tạo (AI) — Động cơ xử lý, Tác nhân & Cấp độ',
+            badge: 'ANI → AGI → ASI',
+            description:
+              'AI vận hành qua vòng lặp Tác nhân thông minh (Intelligent Agent) tương tác với Môi trường (Environment) thông qua Cảm biến (Sensors) và Bộ phận thực thi (Actuators). Tiến trình cấp độ: ANI (AI Hẹp / Đơn nhiệm — hiện tại) → AGI (AI Tổng quát / Đa nhiệm) → ASI (Siêu trí tuệ). Quản trị cần áp dụng "Sandbox pháp lý" và cân bằng giữa Dữ liệu mở (Open Data) với Bảo vệ quyền riêng tư cá nhân.',
+            highlights: [
+              'Vòng lặp: Môi trường (Environment), Cảm biến (Sensors), Tác nhân thông minh (Intelligent Agent), Bộ phận thực thi (Actuators)',
+              'Cấp độ: ANI (AI Hẹp/Đơn nhiệm — hiện tại), AGI (AI Tổng quát/Đa nhiệm), ASI (Siêu trí tuệ)',
+              'Quản trị: Sandbox pháp lý; cân bằng Dữ liệu mở (Open Data) và Bảo vệ quyền riêng tư cá nhân'
+            ]
+          },
+          {
+            title: 'Prompt Engineering & Kiến trúc Suy luận Logic (Zero-shot vs. CoT)',
+            badge: 'Giảm ảo giác Hallucination',
+            description:
+              'Prompt Engineering gồm 4 thành phần: Ngữ cảnh (Context — bối cảnh và vai trò), Chỉ thị (Instruction — yêu cầu cốt lõi), Ví dụ (Examples — dữ liệu mẫu), và Định dạng (Format — cấu trúc đầu ra). Kỹ thuật Chain of Thought (CoT: Input → Bước 1 → Bước 2 → Bước 3 → Output) bắt buộc AI chia nhỏ lập luận, giúp triệt tiêu hiện tượng ảo giác (Hallucination) trong các bài toán logic phức tạp (khác với Zero-shot đi thẳng từ Input đến Output).',
+            highlights: [
+              '4 thành phần: Ngữ cảnh (Context), Chỉ thị (Instruction), Ví dụ (Examples), Định dạng (Format)',
+              'Zero-shot: Input → Output',
+              'Chain of Thought (CoT): Input → Bước 1 → Bước 2 → Bước 3 → Output, giúp triệt tiêu ảo giác (Hallucination)'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'Đối chiếu Zero-shot và Chain of Thought (CoT) trong suy luận AI',
+            headers: ['Phương pháp', 'Luồng suy luận', 'Đặc điểm & Tác dụng'],
+            rows: [
+              ['Zero-shot', 'Input → Output', 'Đưa yêu cầu trực tiếp mà không qua chuỗi bước trung gian'],
+              ['Chain of Thought (CoT)', 'Input → Bước 1 → Bước 2 → Bước 3 → Output', 'Chia nhỏ lập luận từng bước, giúp triệt tiêu hiện tượng ảo giác (Hallucination) ở bài toán logic phức tạp']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'Kỹ thuật Chain of Thought (CoT) giúp cải thiện khả năng của AI như thế nào?',
+          options: [
+            'Bắt buộc AI chia nhỏ lập luận từng bước, giúp triệt tiêu ảo giác (Hallucination) trong bài toán logic phức tạp',
+            'Tăng dung lượng ổ cứng lưu trữ dữ liệu thô lên 175 ZB',
+            'Bỏ qua hoàn toàn bối cảnh, chỉ thị và định dạng đầu ra'
+          ],
+          correctIndex: 0,
+          explanation: 'Chain of Thought (Suy nghĩ từng bước) bắt buộc AI chia nhỏ lập luận, giúp triệt tiêu hiện tượng ảo giác (Hallucination) trong các bài toán logic phức tạp.'
+        }
+      },
+      {
+        id: 8,
+        shortLabel: 'Chuyên đề 8',
+        title: 'Tư duy máy tính, Tự động hóa, An ninh - Đạo đức số & Chân dung Kỹ sư 4.0',
+        subtitle: '4 trụ cột Tư duy máy tính, Tự động hóa & Vibe Coding, phòng thủ Deepfake, Đạo đức số toàn cầu/Việt Nam và chân dung Kỹ sư 4.0.',
+        pageRef: 'Trang 10 – 14',
+        tags: ['Computational Thinking', 'Vibe-code', 'Chống Deepfake & CIA', 'Đạo đức số & Kỹ sư 4.0'],
+        keyConcepts: [
+          {
+            title: 'Tư duy máy tính (Computational Thinking)',
+            badge: '4 trụ cột → Giải pháp cốt lõi',
+            description:
+              'Máy tính có tốc độ siêu tốc (hàng nghìn tỷ phép tính/giây) nhưng "mù quáng", thực thi vô điều kiện và thiếu trực giác; con người chậm hơn nhưng hiểu ngữ cảnh và linh hoạt sửa sai. Tư duy máy tính chuyển đổi ý tưởng thành thuật toán qua 4 trụ cột: Phân rã (Decomposition), Trừu tượng hóa (Abstraction), Nhận diện khuôn mẫu (Pattern), Thiết kế thuật toán (Algorithm) → Giải pháp cốt lõi, tránh bùng nổ tổ hợp.',
+            highlights: [
+              '4 trụ cột: Phân rã (Decomposition), Trừu tượng hóa (Abstraction), Nhận diện khuôn mẫu (Pattern), Thiết kế thuật toán (Algorithm)',
+              'Hướng tới Giải pháp cốt lõi, né tránh bùng nổ tổ hợp',
+              'Máy tính nhanh nhưng thiếu trực giác; con người hiểu ngữ cảnh & linh hoạt sửa sai'
+            ]
+          },
+          {
+            title: 'Tự động hóa IT & Kỷ nguyên Vibe Coding',
+            badge: 'BPA • RPA • IaC • Vibe-code',
+            description:
+              'Vòng lặp tự động hóa: Kích hoạt (Trigger — bắt giữ sự kiện) → Kịch bản (Script — tập lệnh xử lý) → Quy trình (Workflow — chuỗi hành động liên tiếp). Các cấp độ: BPA (luồng quy trình kinh doanh liên phòng ban), RPA (robot bắt chước thao tác giao diện phần mềm 24/7), IaC (Infrastructure as Code — quản lý, cấu hình máy chủ bằng mã lệnh). Về lập trình: Hard code → Low-code / No-code → Vibe-code (lập trình bằng hội thoại tự nhiên, AI là Pair Programmer; lập trình viên dịch chuyển sang điều phối kiến trúc & thẩm định hộp đen AI).',
+            highlights: [
+              'Vòng lặp: Kích hoạt (Trigger) → Kịch bản (Script) → Quy trình (Workflow)',
+              'Cấp độ: BPA (liên phòng ban), RPA (bắt chước giao diện 24/7), IaC (mã lệnh hạ tầng)',
+              'Vibe-code: Hội thoại tự nhiên, AI là Pair Programmer; vai trò chuyển sang điều phối kiến trúc & thẩm định hộp đen AI'
+            ]
+          },
+          {
+            title: 'Bảo mật (CIA / ISO 27000) & 3 Tuyến phòng thủ Deepfake',
+            badge: 'Tài sản số & Deepfake',
+            description:
+              'Bảo vệ tài sản số theo bộ ba CIA (Confidentiality — Bảo mật, Integrity — Toàn vẹn, Availability — Sẵn sàng) và ISO 27000. Chống Deepfake qua 3 tuyến: Tuyến 1 (Chính sách & Pháp luật: Đạo luật AI của EU, cơ chế Opt-out bản quyền), Tuyến 2 (Công nghệ nhận diện: Sinh trắc học PPG do vi tuần hoàn máu, phân tích không gian/thời gian), Tuyến 3 (Xác thực nguồn gốc: Siêu dữ liệu chuẩn C2PA, Thủy vân số Watermarking, Dấu vân tay số). Con người vẫn là mắt xích yếu nhất.',
+            highlights: [
+              'Bộ ba CIA (Confidentiality, Integrity, Availability) & ISO 27000',
+              'Tuyến 1 (Chính sách & Pháp luật): Đạo luật AI của EU, cơ chế Opt-out bản quyền',
+              'Tuyến 2 (Công nghệ nhận diện): Sinh trắc học PPG do vi tuần hoàn máu, phân tích không gian/thời gian',
+              'Tuyến 3 (Xác thực nguồn gốc): Chuẩn C2PA, Thủy vân số (Watermarking), Dấu vân tay số',
+              'Lưu ý: Con người là mắt xích yếu nhất; cần phối hợp đồng bộ pháp luật, công nghệ, nhận thức'
+            ]
+          },
+          {
+            title: 'Đạo đức số (Toàn cầu & Việt Nam) & Chân dung Kỹ sư CNTT 4.0',
+            badge: 'Vô lăng định hướng',
+            description:
+              'Định hướng đạo đức số: UNESCO (bảo vệ quyền con người & hệ sinh thái), OpenAI (kiểm soát AGI an toàn dài hạn), Microsoft (Khung 6 trụ cột thực hành phần mềm đáng tin cậy), Google (cân bằng đổi mới táo bạo & trách nhiệm xã hội). Pháp lý Việt Nam: Luật An ninh mạng (hiệu lực 2019), Luật Trí tuệ nhân tạo (dự kiến 2026), Luật Bảo vệ Dữ liệu Cá nhân (dự kiến 2026). Chân dung Kỹ sư 4.0: Công nghệ là nền móng vật lý, Dữ liệu là nhiên liệu bứt phá, Tư duy hệ thống là động cơ cốt lõi, Đạo đức con người là vô lăng định hướng; không ngừng học tập suốt đời và rèn luyện đánh giá phản biện.',
+            highlights: [
+              'UNESCO, OpenAI, Microsoft (6 trụ cột phần mềm đáng tin cậy), Google',
+              'Việt Nam: Luật An ninh mạng (2019), Luật Trí tuệ nhân tạo (dự kiến 2026), Luật Bảo vệ Dữ liệu Cá nhân (dự kiến 2026)',
+              'Chân dung Kỹ sư 4.0: Công nghệ (nền móng vật lý) • Dữ liệu (nhiên liệu bứt phá) • Tư duy hệ thống (động cơ cốt lõi) • Đạo đức con người (vô lăng định hướng)'
+            ]
+          }
+        ],
+        tables: [
+          {
+            caption: 'Ba tuyến phòng thủ trước rủi ro & Deepfake (Trang 12)',
+            headers: ['Tuyến phòng thủ', 'Nội dung & Cơ chế trong tài liệu'],
+            rows: [
+              ['Tuyến 1: Chính sách & Pháp luật', 'Đạo luật AI của EU, cơ chế Opt-out bản quyền'],
+              ['Tuyến 2: Công nghệ nhận diện', 'Sinh trắc học PPG do vi tuần hoàn máu, phân tích không gian/thời gian'],
+              ['Tuyến 3: Xác thực nguồn gốc', 'Siêu dữ liệu chuẩn C2PA, Thủy vân số (Watermarking), Dấu vân tay số']
+            ]
+          },
+          {
+            caption: 'Đạo đức số & Hành lang pháp lý (Trang 13)',
+            headers: ['Tổ chức / Quốc gia', 'Định hướng & Khung pháp lý trọng tâm'],
+            rows: [
+              ['UNESCO', 'Bảo vệ quyền con người & Hệ sinh thái (Chiếc ô toàn cầu)'],
+              ['OpenAI', 'Kiểm soát Siêu trí tuệ (AGI) an toàn dài hạn'],
+              ['Microsoft', 'Khung 6 trụ cột thực hành phần mềm đáng tin cậy'],
+              ['Google', 'Cân bằng giữa Đổi mới táo bạo & Trách nhiệm xã hội'],
+              ['Việt Nam', 'Luật An ninh mạng (Hiệu lực 2019), Luật Trí tuệ nhân tạo (Dự kiến 2026), Luật Bảo vệ Dữ liệu Cá nhân (Dự kiến 2026)']
+            ]
+          }
+        ],
+        selfCheck: {
+          question: 'Trong chân dung Kỹ sư CNTT 4.0, yếu tố nào đóng vai trò là "vô lăng định hướng"?',
+          options: [
+            'Đạo đức con người',
+            'Chỉ riêng tốc độ xung nhịp CPU',
+            'Việc bỏ qua đánh giá phản biện và học tập suốt đời'
+          ],
+          correctIndex: 0,
+          explanation: 'Tài liệu khẳng định: "Công nghệ là nền móng vật lý. Dữ liệu là nhiên liệu bứt phá. Tư duy hệ thống là động cơ cốt lõi. Và Đạo đức con người chính là vô lăng định hướng."'
+        }
+      }
+    ];
+
+    /**
+     * QUẢN LÝ TRẠNG THÁI & LƯU TRỮ LOCALSTORAGE
+     */
+    const STORAGE_KEY = 'it40_learning_hub_state_v1';
+
+    const defaultState = {
+      activeModuleId: 1,
+      completedModules: [],
+      notes: {},
+      quizAnswers: {},
+      searchQuery: ''
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(defaultState);
+        const parsed = JSON.parse(raw);
+        return {
+          activeModuleId: typeof parsed.activeModuleId === 'number' ? parsed.activeModuleId : 1,
+          completedModules: Array.isArray(parsed.completedModules) ? parsed.completedModules : [],
+          notes: parsed.notes && typeof parsed.notes === 'object' ? parsed.notes : {},
+          quizAnswers: parsed.quizAnswers && typeof parsed.quizAnswers === 'object' ? parsed.quizAnswers : {},
+          searchQuery: typeof parsed.searchQuery === 'string' ? parsed.searchQuery : ''
+        };
+      } catch (err) {
+        console.error('Lỗi đọc localStorage:', err);
+        return structuredClone(defaultState);
+      }
+    }
+
+    let appState = loadState();
+
+    function saveState(toastMsg = null) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        if (toastMsg) {
+          showToast(toastMsg);
+        }
+      } catch (err) {
+        console.error('Lỗi lưu localStorage:', err);
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast-banner');
+      const toastText = document.getElementById('toast-message');
+      if (!toast || !toastText) return;
+      toastText.textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 2200);
+    }
+
+    /**
+     * HÀM HỖ TRỢ TÌM KIẾM & LỌC CHUYÊN ĐỀ
+     */
+    function moduleMatchesQuery(mod, query) {
+      const q = query.trim().toLowerCase();
+      if (!q) return true;
+      const haystack = [
+        mod.shortLabel,
+        mod.title,
+        mod.subtitle,
+        mod.pageRef,
+        ...(mod.tags || []),
+        ...(mod.keyConcepts || []).flatMap((c) => [c.title, c.badge, c.description, ...(c.highlights || [])]),
+        ...(mod.tables || []).flatMap((t) => [t.caption, ...(t.headers || []), ...(t.rows || []).flat()]),
+        mod.selfCheck?.question || '',
+        ...(mod.selfCheck?.options || [])
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    }
+
+    /**
+     * RENDER SIDEBAR NAVIGATION & PROGRESS
+     */
+    function renderSidebar() {
+      const nav = document.getElementById('module-nav');
+      const searchInput = document.getElementById('search-input');
+      const clearSearchBtn = document.getElementById('clear-search-btn');
+
+      if (searchInput && searchInput.value !== appState.searchQuery) {
+        searchInput.value = appState.searchQuery;
+      }
+      if (clearSearchBtn) {
+        clearSearchBtn.classList.toggle('hidden', !appState.searchQuery.trim());
+      }
+
+      // Cập nhật thanh tiến độ
+      const total = MODULES_DATA.length;
+      const doneCount = appState.completedModules.length;
+      const percent = Math.round((doneCount / total) * 100);
+      document.getElementById('progress-text').textContent = `${doneCount}/${total} chuyên đề (${percent}%)`;
+      document.getElementById('progress-bar').style.width = `${percent}%`;
+
+      // Lọc chuyên đề theo từ khóa tìm kiếm
+      const filtered = MODULES_DATA.filter((m) => moduleMatchesQuery(m, appState.searchQuery));
+
+      if (filtered.length === 0) {
+        nav.innerHTML = `
+          <div class="text-center py-8 px-3 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+            <p class="text-xs font-semibold text-slate-600">Không tìm thấy chuyên đề phù hợp</p>
+            <p class="text-[11px] text-slate-400 mt-1">Thử tìm từ khóa khác như "IPv6", "Vibe-code", "SaaS", "Qubit"...</p>
+          </div>
+        `;
+        return;
+      }
+
+      nav.innerHTML = filtered
+        .map((mod) => {
+          const isActive = mod.id === appState.activeModuleId;
+          const isCompleted = appState.completedModules.includes(mod.id);
+          const hasNote = Boolean((appState.notes[mod.id] || '').trim());
+
+          return `
+            <div
+              class="group flex items-start gap-2.5 p-2.5 rounded-xl border transition cursor-pointer ${
+                isActive
+                  ? 'bg-indigo-50/90 border-indigo-200 text-indigo-950 shadow-2xs'
+                  : 'bg-white border-transparent hover:bg-slate-50 hover:border-slate-200 text-slate-700'
+              }"
+              data-select-module="${mod.id}"
+            >
+              <button
+                type="button"
+                data-toggle-complete="${mod.id}"
+                aria-label="Đánh dấu hoàn thành ${mod.shortLabel}"
+                title="${isCompleted ? 'Đã hoàn thành (nhấn để bỏ đánh dấu)' : 'Đánh dấu hoàn thành'}"
+                class="mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition cursor-pointer ${
+                  isCompleted
+                    ? 'bg-emerald-600 border-emerald-600 text-white'
+                    : 'border-slate-300 bg-white hover:border-indigo-500'
+                }"
+              >
+                ${
+                  isCompleted
+                    ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
+                    : ''
+                }
+              </button>
+
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center justify-between gap-1.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider ${
+                    isActive ? 'text-indigo-600' : 'text-slate-400 group-hover:text-indigo-600'
+                  }">
+                    ${mod.shortLabel}
+                  </span>
+                  <div class="flex items-center gap-1 shrink-0">
+                    ${
+                      hasNote
+                        ? '<span title="Có ghi chú cá nhân" class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-medium">Ghi chú</span>'
+                        : ''
+                    }
+                    <span class="text-[10px] text-slate-400">${mod.pageRef}</span>
+                  </div>
+                </div>
+                <div class="text-xs font-semibold leading-snug mt-0.5 line-clamp-2 ${
+                  isActive ? 'text-indigo-950' : 'text-slate-800'
+                }">
+                  ${mod.title}
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    /**
+     * RENDER NỘI DUNG CHUYÊN ĐỀ ĐANG CHỌN
+     */
+    function renderActiveModule() {
+      const mod = MODULES_DATA.find((m) => m.id === appState.activeModuleId) || MODULES_DATA[0];
+      appState.activeModuleId = mod.id;
+
+      // Breadcrumb & Header Checkbox
+      document.getElementById('breadcrumb-topic').textContent = `${mod.shortLabel}: ${mod.title}`;
+      const headerCheckbox = document.getElementById('header-complete-checkbox');
+      headerCheckbox.checked = appState.completedModules.includes(mod.id);
+
+      // Thẻ giới thiệu chuyên đề
+      const isCompleted = appState.completedModules.includes(mod.id);
+      document.getElementById('module-header-card').innerHTML = `
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div class="space-y-2.5 min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+                ${mod.shortLabel} / 8
+              </span>
+              <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-600">
+                Tài liệu gốc: ${mod.pageRef}
+              </span>
+              ${
+                isCompleted
+                  ? '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">✓ Đã hoàn thành</span>'
+                  : '<span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/70">Đang học tập</span>'
+              }
+            </div>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+              ${mod.title}
+            </h1>
+            <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
+              ${mod.subtitle}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-2">
+          ${mod.tags
+            .map(
+              (tag) =>
+                `<span class="text-xs font-medium px-3 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200/80"># ${tag}</span>`
+            )
+            .join('')}
+        </div>
+      `;
+
+      // Các thẻ khái niệm trọng tâm (Interactive Study Cards)
+      document.getElementById('study-cards-section').innerHTML = `
+        <div class="flex items-center justify-between">
+          <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span class="w-2 h-5 rounded-full bg-indigo-600 inline-block"></span>
+            Khái niệm &amp; Nội dung trọng tâm
+          </h2>
+          <span class="text-xs text-slate-400">${mod.keyConcepts.length} thẻ kiến thức</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${mod.keyConcepts
+            .map(
+              (card, idx) => `
+              <article class="bg-white rounded-2xl border border-slate-200 hover:border-indigo-200 p-5 shadow-2xs transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-start justify-between gap-2 mb-2.5">
+                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+                      Ý chính ${idx + 1} • ${card.badge}
+                    </span>
+                  </div>
+                  <h3 class="text-base font-bold text-slate-900 leading-snug mb-2">
+                    ${card.title}
+                  </h3>
+                  <p class="text-sm text-slate-600 leading-relaxed mb-3.5">
+                    ${card.description}
+                  </p>
+                </div>
+
+                <ul class="space-y-1.5 pt-3 border-t border-slate-100">
+                  ${card.highlights
+                    .map(
+                      (item) => `
+                      <li class="flex items-start gap-2 text-xs sm:text-[13px] text-slate-700">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 mt-1.5 shrink-0"></span>
+                        <span>${item}</span>
+                      </li>
+                    `
+                    )
+                    .join('')}
+                </ul>
+              </article>
+            `
+            )
+            .join('')}
+        </div>
+      `;
+
+      // Bảng so sánh & tra cứu
+      const tablesContainer = document.getElementById('tables-section');
+      if (mod.tables && mod.tables.length > 0) {
+        tablesContainer.innerHTML = `
+          <div class="flex items-center justify-between">
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-2 h-5 rounded-full bg-cyan-500 inline-block"></span>
+              Bảng đối chiếu &amp; Tra cứu nhanh
+            </h2>
+          </div>
+
+          <div class="space-y-4">
+            ${mod.tables
+              .map(
+                (tbl) => `
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xs">
+                  <div class="px-5 py-3.5 bg-slate-50/80 border-b border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-800">${tbl.caption}</h3>
+                  </div>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                      <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                          ${tbl.headers.map((h) => `<th class="py-3 px-4 sm:px-5">${h}</th>`).join('')}
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-slate-100 text-xs sm:text-sm text-slate-700">
+                        ${tbl.rows
+                          .map(
+                            (row, rIdx) => `
+                            <tr class="${rIdx % 2 === 1 ? 'bg-slate-50/40' : 'bg-white'} hover:bg-indigo-50/30 transition">
+                              ${row
+                                .map(
+                                  (cell, cIdx) =>
+                                    `<td class="py-3 px-4 sm:px-5 align-top leading-relaxed ${
+                                      cIdx === 0 ? 'font-semibold text-slate-900' : 'text-slate-600'
+                                    }">${cell}</td>`
+                                )
+                                .join('')}
+                            </tr>
+                          `
+                          )
+                          .join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              `
+              )
+              .join('')}
+          </div>
+        `;
+      } else {
+        tablesContainer.innerHTML = '';
+      }
+
+      // Render câu hỏi tự kiểm tra nhanh
+      renderSelfCheck(mod);
+
+      // Render ghi chú cá nhân cho chuyên đề hiện tại
+      const noteTextarea = document.getElementById('personal-note-textarea');
+      const currentNote = appState.notes[mod.id] || '';
+      noteTextarea.value = currentNote;
+      updateNoteCharCount(currentNote.length);
+
+      // Cập nhật nút Trước / Tiếp theo
+      const currentIndex = MODULES_DATA.findIndex((m) => m.id === mod.id);
+      const prevBtn = document.getElementById('prev-module-btn');
+      const nextBtn = document.getElementById('next-module-btn');
+      const prevLabel = document.getElementById('prev-module-label');
+      const nextLabel = document.getElementById('next-module-label');
+
+      if (currentIndex > 0) {
+        prevBtn.disabled = false;
+        prevLabel.textContent = `Trước: ${MODULES_DATA[currentIndex - 1].shortLabel}`;
+      } else {
+        prevBtn.disabled = true;
+        prevLabel.textContent = 'Đang ở chuyên đề đầu tiên';
+      }
+
+      if (currentIndex < MODULES_DATA.length - 1) {
+        nextBtn.disabled = false;
+        nextLabel.textContent = `Tiếp: ${MODULES_DATA[currentIndex + 1].shortLabel}`;
+      } else {
+        nextBtn.disabled = true;
+        nextLabel.textContent = 'Đã đến chuyên đề cuối cùng';
+      }
+    }
+
+    function renderSelfCheck(mod) {
+      const container = document.getElementById('self-check-card');
+      const sc = mod.selfCheck;
+      if (!sc) {
+        container.innerHTML = '';
+        return;
+      }
+
+      const selectedIdx = appState.quizAnswers[mod.id];
+      const hasAnswered = typeof selectedIdx === 'number';
+      const isCorrect = hasAnswered && selectedIdx === sc.correctIndex;
+
+      container.innerHTML = `
+        <div>
+          <div class="flex items-center gap-2 mb-2.5">
+            <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-200/70">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            <h3 class="text-base font-bold text-slate-900">Tự kiểm tra nhanh</h3>
+          </div>
+
+          <p class="text-sm font-medium text-slate-800 leading-relaxed mb-3.5">
+            ${sc.question}
+          </p>
+
+          <div class="space-y-2">
+            ${sc.options
+              .map((opt, idx) => {
+                let btnClass = 'bg-slate-50 border-slate-200 text-slate-700 hover:border-indigo-300 hover:bg-indigo-50/40';
+                if (hasAnswered) {
+                  if (idx === sc.correctIndex) {
+                    btnClass = 'bg-emerald-50 border-emerald-400 text-emerald-900 font-semibold';
+                  } else if (idx === selectedIdx) {
+                    btnClass = 'bg-rose-50 border-rose-300 text-rose-900';
+                  } else {
+                    btnClass = 'bg-slate-50/60 border-slate-200 text-slate-400';
+                  }
+                }
+                return `
+                  <button
+                    type="button"
+                    data-quiz-option="${idx}"
+                    class="w-full text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm transition flex items-start gap-2.5 cursor-pointer ${btnClass}"
+                  >
+                    <span class="w-5 h-5 rounded-full border border-current/30 flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5">
+                      ${String.fromCharCode(65 + idx)}
+                    </span>
+                    <span class="leading-snug">${opt}</span>
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+
+        <div class="mt-4">
+          ${
+            hasAnswered
+              ? `<div class="p-3.5 rounded-xl text-xs leading-relaxed border ${
+                  isCorrect
+                    ? 'bg-emerald-50/80 border-emerald-200 text-emerald-800'
+                    : 'bg-amber-50/80 border-amber-200 text-amber-900'
+                }">
+                  <div class="font-bold mb-1">${isCorrect ? '✓ Chính xác!' : '• Gợi ý đối chiếu tài liệu:'}</div>
+                  <div>${sc.explanation}</div>
+                </div>`
+              : '<p class="text-xs text-slate-400">Chọn một đáp án để kiểm tra nhanh kiến thức chuyên đề.</p>'
+          }
+        </div>
+      `;
+
+      container.querySelectorAll('[data-quiz-option]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const chosen = Number(btn.getAttribute('data-quiz-option'));
+          appState.quizAnswers[mod.id] = chosen;
+          saveState('Đã lưu kết quả tự kiểm tra');
+          renderSelfCheck(mod);
+        });
+      });
+    }
+
+    function updateNoteCharCount(len) {
+      const el = document.getElementById('note-char-count');
+      if (el) el.textContent = `${len} ký tự`;
+    }
+
+    /**
+     * XỬ LÝ SỰ KIỆN TƯƠNG TÁC
+     */
+    function toggleModuleCompleted(moduleId) {
+      const idx = appState.completedModules.indexOf(moduleId);
+      let msg = '';
+      if (idx >= 0) {
+        appState.completedModules.splice(idx, 1);
+        msg = `Đã bỏ đánh dấu hoàn thành Chuyên đề ${moduleId}`;
+      } else {
+        appState.completedModules.push(moduleId);
+        msg = `Đã đánh dấu hoàn thành Chuyên đề ${moduleId}`;
+      }
+      saveState(msg);
+      renderSidebar();
+      renderActiveModule();
+    }
+
+    function selectModule(moduleId, closeMobileDrawer = true) {
+      appState.activeModuleId = moduleId;
+      saveState();
+      renderSidebar();
+      renderActiveModule();
+      if (closeMobileDrawer) {
+        setMobileSidebarOpen(false);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setMobileSidebarOpen(isOpen) {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (!sidebar || !backdrop) return;
+      if (isOpen) {
+        sidebar.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    function openResetModal() {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function bindEvents() {
+      // Mở / đóng sidebar trên di động
+      document.getElementById('open-sidebar-btn').addEventListener('click', () => setMobileSidebarOpen(true));
+      document.getElementById('close-sidebar-btn').addEventListener('click', () => setMobileSidebarOpen(false));
+      document.getElementById('sidebar-backdrop').addEventListener('click', () => setMobileSidebarOpen(false));
+
+      // Click chọn chuyên đề hoặc tích hoàn thành trong danh sách sidebar
+      document.getElementById('module-nav').addEventListener('click', (e) => {
+        const toggleBtn = e.target.closest('[data-toggle-complete]');
+        if (toggleBtn) {
+          e.stopPropagation();
+          const id = Number(toggleBtn.getAttribute('data-toggle-complete'));
+          toggleModuleCompleted(id);
+          return;
+        }
+        const card = e.target.closest('[data-select-module]');
+        if (card) {
+          const id = Number(card.getAttribute('data-select-module'));
+          selectModule(id, true);
+        }
+      });
+
+      // Checkbox hoàn thành trên header
+      document.getElementById('header-complete-checkbox').addEventListener('change', () => {
+        toggleModuleCompleted(appState.activeModuleId);
+      });
+
+      // Tìm kiếm chuyên đề
+      const searchInput = document.getElementById('search-input');
+      const clearSearchBtn = document.getElementById('clear-search-btn');
+
+      searchInput.addEventListener('input', (e) => {
+        appState.searchQuery = e.target.value;
+        saveState();
+        renderSidebar();
+      });
+
+      clearSearchBtn.addEventListener('click', () => {
+        appState.searchQuery = '';
+        searchInput.value = '';
+        saveState();
+        renderSidebar();
+      });
+
+      // Ghi chú cá nhân tự động lưu vào localStorage
+      const noteTextarea = document.getElementById('personal-note-textarea');
+      noteTextarea.addEventListener('input', (e) => {
+        const val = e.target.value;
+        appState.notes[appState.activeModuleId] = val;
+        updateNoteCharCount(val.length);
+        saveState();
+        renderSidebar();
+      });
+
+      document.getElementById('clear-note-btn').addEventListener('click', () => {
+        delete appState.notes[appState.activeModuleId];
+        noteTextarea.value = '';
+        updateNoteCharCount(0);
+        saveState('Đã xóa ghi chú của chuyên đề hiện tại');
+        renderSidebar();
+      });
+
+      // Điều hướng Trước / Tiếp theo
+      document.getElementById('prev-module-btn').addEventListener('click', () => {
+        const idx = MODULES_DATA.findIndex((m) => m.id === appState.activeModuleId);
+        if (idx > 0) {
+          selectModule(MODULES_DATA[idx - 1].id, false);
+        }
+      });
+
+      document.getElementById('next-module-btn').addEventListener('click', () => {
+        const idx = MODULES_DATA.findIndex((m) => m.id === appState.activeModuleId);
+        if (idx >= 0 && idx < MODULES_DATA.length - 1) {
+          selectModule(MODULES_DATA[idx + 1].id, false);
+        }
+      });
+
+      // Modal xác nhận đặt lại tiến độ
+      document.getElementById('open-reset-modal-btn').addEventListener('click', openResetModal);
+      document.getElementById('cancel-reset-btn').addEventListener('click', closeResetModal);
+      document.getElementById('reset-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'reset-modal') closeResetModal();
+      });
+
+      document.getElementById('confirm-reset-btn').addEventListener('click', () => {
+        const keepCurrentId = appState.activeModuleId;
+        appState = structuredClone(defaultState);
+        appState.activeModuleId = keepCurrentId;
+        saveState('Đã đặt lại toàn bộ tiến độ và ghi chú');
+        closeResetModal();
+        renderSidebar();
+        renderActiveModule();
+      });
+    }
+
+    // Khởi tạo ứng dụng
+    document.addEventListener('DOMContentLoaded', () => {
+      bindEvents();
+      renderSidebar();
+      renderActiveModule();
+    });
+  </script>
+</body>
+</html>
